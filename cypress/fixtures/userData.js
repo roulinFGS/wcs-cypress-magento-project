@@ -13,12 +13,12 @@ const existingUser = {
   "firstname": firstname,
   "lastname": lastname,
   "password": "123456Az",
-  "emailAddress": `${lastname}.${firstname}@elie.wcs`
+  "emailAddress": `${lastname}.${firstname}@elie.wcs`,
+  "address1": "1 rue de la rue",
+  "city": "Bordeaux"
 }
 
 export {
   existingUser,
   newUser
 };
-
-  

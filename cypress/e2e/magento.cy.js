@@ -1,20 +1,8 @@
 const baseUrl = "https://magento.softwaretestingboard.com";
 
-describe.skip("Smoke test", () => {
-  it("Check homepage", () => {
+describe("Majento tests suite", () => {
+  it("Register successfully", () => {
     cy.visit(baseUrl);
-    cy.get('[href="' + baseUrl + '/customer/account/create/"]').contains(
-      "Create an Account"
-    );
-  });
-});
-
-describe.skip("Create an Account", () => {
-  beforeEach(() => {
-    cy.visit(baseUrl);
-  });
-
-  it("register", () => {
     const { firstname, lastname, password, emailAddress } = require("../fixtures/userData").newUser;
 
     cy.contains("Create an Account").click();
@@ -37,22 +25,21 @@ describe.skip("Create an Account", () => {
       .should("contain", `${firstname} ${lastname}`)
       .should("contain", emailAddress);
   });
-});
 
-describe("Sign In", () => {
-  beforeEach(() => {
+  it.only("Sign in successfully", () => {
+    // Connection to shop
     cy.visit(baseUrl);
 
     const user = require("../fixtures/userData");
-    cy.log("user", user);
-  });
+    const signUrl = 'https://magento.softwaretestingboard.com/customer/account/login';
 
-  it("Sign in successfully", () => {
-    const signUrl = 'https://magento.softwaretestingboard.com/customer/account/login/referer/aHR0cHM6Ly9tYWdlbnRvLnNvZnR3YXJldGVzdGluZ2JvYXJkLmNvbS8%2C/';
+    const { password, emailAddress, address1, city } = require("../fixtures/userData").existingUser;
 
-    const { password, emailAddress } = require("../fixtures/userData").existingUser;
-    cy.get(`[href="${signUrl}"]`).contains(' Sign In ').click();
-    cy.url().should("eq", signUrl);
+    cy.wait(2000);
+    // cy.get("#login-form").find('#send2').click();
+
+    cy.get("#login-form").submit();
+    cy.url().should("contain", signUrl);
 
     // Fill email field
     cy.get('#email').type(emailAddress);
@@ -65,5 +52,62 @@ describe("Sign In", () => {
     cy.wait(2000);
     // Assertion for success
     cy.url().should("eq", baseUrl + '/'); // TODO find how handle optionnal trailing slashes in url checks
+
+    const saleUrl = 'https://magento.softwaretestingboard.com/sale.html';
+    const bagsUrl = 'https://magento.softwaretestingboard.com/gear/bags.html';
+
+    cy.get(`[href="${saleUrl}"]`).contains('Sale').click();
+
+    // Assertion for success
+    cy.url().should("eq", saleUrl);
+
+    // click on bags link
+    cy.get(`.sidebar-main a[href="${bagsUrl}"]`).click();
+
+    // Assertion for success
+    cy.url().should("eq", bagsUrl);
+
+    // ça va plaire à Roland ^^
+    cy.get('ol.product-items li:first').click();
+
+    // Assertion for success
+    cy.url().should("eq", "https://magento.softwaretestingboard.com/push-it-messenger-bag.html");
+
+    // Wait for js magic to enable
+    cy.wait(1000);
+
+    // Add to cart
+    cy.get('#product-addtocart-button').click();
+
+    // check message you added
+    cy.get('[data-ui-id="message-success"]').should("contain", "You added Push It Messenger Bag to your shopping cart.");
+
+    // click on mini cart
+    // cy.get('[href="https://magento.softwaretestingboard.com/checkout/cart/"]').click();
+    cy.get('.showcart').click();
+
+    // Wait for js magic to enable
+    cy.wait(1000);
+
+    // click on checkout
+    cy.get("#top-cart-btn-checkout").click();
+
+    // check page is correct
+    cy.url().should("contain", "https://magento.softwaretestingboard.com/checkout");
+
+    // fill in info
+
+    // skipping name surname and company
+
+    // street address (skipping lines 2 and 3)
+    // cy.get('span').contains('Street Adress').parent().next().find(name^="street").type(address1);
+
+    // City
+    cy.get("label.label").find("City").next().find("input").type(city);    
+
+    // country avant province
+
+    // check message Thank you...
+
   });
 });
