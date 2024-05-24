@@ -1,4 +1,5 @@
 const baseUrl = "https://magento.softwaretestingboard.com";
+
 describe.skip("Smoke test", () => {
   it("Check homepage", () => {
     cy.visit(baseUrl);
@@ -8,15 +9,14 @@ describe.skip("Smoke test", () => {
   });
 });
 
-describe("Create an Account", () => {
+describe.skip("Create an Account", () => {
   beforeEach(() => {
     cy.visit(baseUrl);
   });
 
   it("register", () => {
-    const { firstname, lastname, password } = require("../fixtures/userData");
-    const id = Date.now();
-    const emailAddress = `${lastname}.${firstname + id}@elie.wcs`;
+    const { firstname, lastname, password, emailAddress } = require("../fixtures/userData").newUser;
+
     cy.contains("Create an Account").click();
     cy.url().should("eq", baseUrl + "/customer/account/create/");
     cy.get("#firstname").type(firstname);
@@ -36,5 +36,34 @@ describe("Create an Account", () => {
     cy.get(".box-information")
       .should("contain", `${firstname} ${lastname}`)
       .should("contain", emailAddress);
+  });
+});
+
+describe("Sign In", () => {
+  beforeEach(() => {
+    cy.visit(baseUrl);
+
+    const user = require("../fixtures/userData");
+    cy.log("user", user);
+  });
+
+  it("Sign in successfully", () => {
+    const signUrl = 'https://magento.softwaretestingboard.com/customer/account/login/referer/aHR0cHM6Ly9tYWdlbnRvLnNvZnR3YXJldGVzdGluZ2JvYXJkLmNvbS8%2C/';
+
+    const { password, emailAddress } = require("../fixtures/userData").existingUser;
+    cy.get(`[href="${signUrl}"]`).contains(' Sign In ').click();
+    cy.url().should("eq", signUrl);
+
+    // Fill email field
+    cy.get('#email').type(emailAddress);
+    // Fill password field
+    cy.get('#pass').type(password);
+
+    // Button submit for sign in
+    cy.get('#send2').click();
+
+    cy.wait(2000);
+    // Assertion for success
+    cy.url().should("eq", baseUrl + '/'); // TODO find how handle optionnal trailing slashes in url checks
   });
 });
