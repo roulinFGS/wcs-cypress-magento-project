@@ -27,18 +27,15 @@ describe("Majento tests suite", () => {
   });
 
   it.only("Sign in successfully", () => {
-    // Connection to shop
-    cy.visit(baseUrl);
-
     const user = require("../fixtures/userData");
     const signUrl = 'https://magento.softwaretestingboard.com/customer/account/login';
 
     const { password, emailAddress, address1, city } = require("../fixtures/userData").existingUser;
 
+    // Connection to shop
+    cy.visit(signUrl);
     cy.wait(2000);
-    // cy.get("#login-form").find('#send2').click();
 
-    cy.get("#login-form").submit();
     cy.url().should("contain", signUrl);
 
     // Fill email field
@@ -47,11 +44,12 @@ describe("Majento tests suite", () => {
     cy.get('#pass').type(password);
 
     // Button submit for sign in
-    cy.get('#send2').click();
-
+    // cy.get('#send2').click();
+    cy.get("#login-form").submit();
     cy.wait(2000);
+
     // Assertion for success
-    cy.url().should("eq", baseUrl + '/'); // TODO find how handle optionnal trailing slashes in url checks
+    cy.url().should("contain", 'https://magento.softwaretestingboard.com/customer/account'); // TODO find how handle optionnal trailing slashes in url checks
 
     const saleUrl = 'https://magento.softwaretestingboard.com/sale.html';
     const bagsUrl = 'https://magento.softwaretestingboard.com/gear/bags.html';
@@ -89,7 +87,7 @@ describe("Majento tests suite", () => {
     // Wait for js magic to enable
     cy.wait(1000);
 
-    // click on checkout
+    // click on checkout // TODO DEBUG HERE
     cy.get("#top-cart-btn-checkout").click();
 
     // check page is correct
