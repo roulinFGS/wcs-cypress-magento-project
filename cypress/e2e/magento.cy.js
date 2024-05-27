@@ -1,10 +1,10 @@
 const baseUrl = "https://magento.softwaretestingboard.com";
 
+const { password, emailAddress, firstname, lastname, address1, city, zip, phone, CountryCode, regionCode } = require("../fixtures/userData").newUser;
+
 describe("Majento tests suite", () => {
   it("Register successfully", () => {
     cy.visit(baseUrl);
-    const { firstname, lastname, password, emailAddress } = require("../fixtures/userData").newUser;
-
     cy.contains("Create an Account").click();
     cy.url().should("eq", baseUrl + "/customer/account/create/");
     cy.get("#firstname").type(firstname);
@@ -26,11 +26,8 @@ describe("Majento tests suite", () => {
       .should("contain", emailAddress);
   });
 
-  it.only("Sign in successfully", () => {
-    const user = require("../fixtures/userData");
-    const signUrl = 'https://magento.softwaretestingboard.com/customer/account/login';
-
-    const { password, emailAddress, address1, city } = require("../fixtures/userData").existingUser;
+  it("Sign in successfully", () => {
+    const signUrl = 'https://magento.softwaretestingboard.com/customer/account/login'
 
     // Connection to shop
     cy.visit(signUrl);
@@ -100,23 +97,25 @@ describe("Majento tests suite", () => {
     // skipping name surname and company
 
     // street address (skipping lines 2 and 3)
-    cy.get('input[name="street[0]"]').type("1 rue victor hugo");
+    cy.get('input[name="street[0]"]').type(address1);
 
     // City
-    cy.get('input[name="city"]').type("Bordeaux");   
+    cy.get('input[name="city"]').type(city);   
 
     // ZIP
-    cy.get('input[name="postcode"]').type("33000");
+    cy.get('input[name="postcode"]').type(zip);
 
     // Phone number
-    cy.get('input[name="telephone"]').type("0709090909");
+    cy.get('input[name="telephone"]').type(phone);
 
     // country avant province
     // cy.get("#co-shipping-form").find("[name='country_id']").select('France').should('contain', 'France');
-    cy.get('select[name="country_id"]').select("FR");
+    cy.get('select[name="country_id"]').select(CountryCode);
     
+    // Shipment recalculation
+    cy.wait(3000);
     // Select Gironde (value=215)
-    cy.get('select[name="region_id"]').select("215");
+    // cy.get('select[name="region_id"]').select(regionCode); // Not mandatory
 
     // Submit address formular
     // cy.get("#co-shipping-form").submit();
