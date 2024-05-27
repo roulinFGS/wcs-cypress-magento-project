@@ -1,5 +1,5 @@
 # wcs-cypress-majento-project
-Simple app for testing majento
+Simple app for testing magento shop
 
 # start testing
 ```
