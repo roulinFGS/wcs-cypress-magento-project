@@ -1,7 +1,8 @@
 const id = Date.now();
 const lastname = "Fabrice";
 const firstname = "Roland";
-
+// Fabrice.Roland@elie.wcs
+// 123456Az
 const newUser = {
   "firstname": firstname,
   "lastname": lastname,

@@ -72,9 +72,9 @@ describe("Majento tests suite", () => {
     cy.url().should("eq", "https://magento.softwaretestingboard.com/push-it-messenger-bag.html");
 
     // Wait for js magic to enable
-    cy.wait(1000);
+    cy.wait(5000);
 
-    // Add to cart
+    // Add to cart TODO flacky
     cy.get('#product-addtocart-button').click();
 
     // check message you added
@@ -85,27 +85,53 @@ describe("Majento tests suite", () => {
     cy.get('.showcart').click();
 
     // Wait for js magic to enable
-    cy.wait(1000);
+    cy.wait(2000);
 
-    // click on checkout // TODO DEBUG HERE
+    // click on checkout // TODO flacky test
     cy.get("#top-cart-btn-checkout").click();
+    cy.wait(7000);
 
     // check page is correct
     cy.url().should("contain", "https://magento.softwaretestingboard.com/checkout");
+    cy.wait(1000);
 
     // fill in info
 
     // skipping name surname and company
 
     // street address (skipping lines 2 and 3)
-    // cy.get('span').contains('Street Adress').parent().next().find(name^="street").type(address1);
+    cy.get('input[name="street[0]"]').type("1 rue victor hugo");
 
     // City
-    cy.get("label.label").find("City").next().find("input").type(city);    
+    cy.get('input[name="city"]').type("Bordeaux");   
+
+    // ZIP
+    cy.get('input[name="postcode"]').type("33000");
+
+    // Phone number
+    cy.get('input[name="telephone"]').type("0709090909");
 
     // country avant province
+    // cy.get("#co-shipping-form").find("[name='country_id']").select('France').should('contain', 'France');
+    cy.get('select[name="country_id"]').select("FR");
+    
+    // Select Gironde (value=215)
+    cy.get('select[name="region_id"]').select("215");
 
+    // Submit address formular
+    // cy.get("#co-shipping-form").submit();
+    // cy.get("[data-role='opc-continue']").click();
+    cy.get("#shipping-method-buttons-container").find('button').click();
+    cy.wait(4000);
+    
     // check message Thank you...
 
+    // https://magento.softwaretestingboard.com/checkout/#payment
+    // cy.get("#co-payment-form").submit();
+    cy.get("button.checkout").click();
+    cy.wait(4000);
+
+    // Success message: Thank you for your purchase!
+    cy.get('span[data-ui-id="page-title-wrapper"]').should('contain', 'Thank you for your purchase!');
   });
 });
